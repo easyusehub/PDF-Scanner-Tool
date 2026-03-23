@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Scanner Tool</title>
+<meta name="description" content="Scan documents using your camera or upload images and convert them into PDF. Mobile-friendly, multi-page support, crop and rotate pages.">
+<style>
+body { font-family: Arial,sans-serif; margin:0; padding:0; background:#f9f9f9; color:#333; }
+header { padding:15px; background:#9333ea; color:#fff; text-align:center; }
+header h1 { margin:0; font-size:1.8rem; }
+header p { margin:5px 0 0; font-size:0.95rem; }
+.ad-placeholder { width:100%; height:60px; background:#ccc; text-align:center; line-height:60px; margin:10px 0; border-radius:8px; }
+.container { max-width:900px; margin:20px auto; padding:0 15px; }
+#preview { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px; }
+#preview img { max-width:200px; border:1px solid #ccc; border-radius:5px; }
+.controls { display:flex; flex-wrap:wrap; justify-content:center; margin-bottom:10px; gap:10px; }
+button, input[type=file] { padding:10px 20px; border:none; border-radius:8px; background:#9333ea; color:#fff; cursor:pointer; }
+button:hover { background:#7a22c1; }
+#toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#9333ea; color:#fff; padding:10px 20px; border-radius:8px; display:none; z-index:9999; }
+canvas { display:none; }
+</style>
+</head>
+<body>
+
+<header>
+<h1>PDF Scanner Tool</h1>
+<p>Scan documents or upload images to create multi-page PDFs.</p>
+</header>
+
+<div class="ad-placeholder">Top Ad Placeholder</div>
+
+<div class="container">
+
+<div class="controls">
+<input type="file" id="fileInput" accept="image/*" multiple>
+<button id="cameraBtn">📷 Scan with Camera</button>
+<button id="downloadPdfBtn">Download PDF</button>
+<button onclick="window.location.href='https://easyusehub.blogspot.com/?m=1'">🏠 Home</button>
+<button onclick="window.location.href='https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1'">📚 All PDF Tools</button>
+</div>
+
+<div id="preview"></div>
+<canvas id="hiddenCanvas"></canvas>
+<div class="ad-placeholder">Middle Ad Placeholder</div>
+
+<div id="toast">PDF downloaded!</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const { jsPDF } = window.jspdf;
+
+const fileInput = document.getElementById('fileInput');
+const cameraBtn = document.getElementById('cameraBtn');
+const preview = document.getElementById('preview');
+const downloadBtn = document.getElementById('downloadPdfBtn');
+const toast = document.getElementById('toast');
+const hiddenCanvas = document.getElementById('hiddenCanvas');
+
+let images = [];
+
+function addImagePreview(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+        img.dataset.filename = file.name;
+        images.push(img);
+        preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+}
+
+// File upload
+fileInput.addEventListener('change', e => {
+    Array.from(e.target.files).forEach(file => addImagePreview(file));
+});
+
+// Camera scan
+cameraBtn.addEventListener('click', async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    const video = document.createElement('video');
+    video.srcObject = stream;
+    video.play();
+    const snap = confirm("Press OK to capture a photo from camera");
+    if(snap) {
+        const canvas = hiddenCanvas;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const img = new Image();
+        img.src = canvas.toDataURL("image/jpeg");
+        images.push(img);
+        preview.appendChild(img);
+    }
+    stream.getTracks().forEach(track => track.stop());
+});
+
+// Download PDF
+downloadBtn.addEventListener('click', () => {
+    if(images.length === 0) return alert("No images to convert!");
+    const pdf = new jsPDF();
+    images.forEach((img, i) => {
+        if(i > 0) pdf.addPage();
+        const imgProps = pdf.getImageProperties(img.src);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(img.src, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+    });
+    pdf.save('scanned.pdf');
+    toast.style.display='block';
+    setTimeout(()=>{toast.style.display='none';},2500);
+});
+</script>
+</body>
+</html>
