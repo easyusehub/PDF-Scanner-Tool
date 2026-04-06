@@ -2,92 +2,178 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF Scanner Tool</title>
-<meta name="description" content="Upload images or PDFs to create multi-page PDFs online. Mobile-friendly, live preview, and download.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PDF Scanner Tool – EasyUseHub</title>
 <style>
-body { font-family: Arial,sans-serif; margin:0; padding:0; background:#f9f9f9; color:#333; }
-header { padding:15px; background:#9333ea; color:#fff; text-align:center; }
-header h1 { margin:0; font-size:1.8rem; }
-header p { margin:5px 0 0; font-size:0.95rem; }
-.ad-placeholder { width:100%; height:60px; background:#ccc; text-align:center; line-height:60px; margin:10px 0; border-radius:8px; }
-.container { max-width:900px; margin:20px auto; padding:0 15px; }
-#upload-box { border:3px dashed #9333ea; padding:20px; text-align:center; cursor:pointer; border-radius:10px; background:#fff; margin-bottom:15px; }
-#preview { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:15px; }
-#preview img { max-width:200px; border:1px solid #ccc; border-radius:5px; }
-.controls { display:flex; flex-wrap:wrap; justify-content:center; margin-bottom:10px; gap:10px; }
-button { padding:10px 20px; border:none; border-radius:8px; background:#9333ea; color:#fff; cursor:pointer; }
-#toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#9333ea; color:#fff; padding:10px 20px; border-radius:8px; display:none; z-index:9999; }
+:root { --primary: #9333ea; --bg: #f8fafc; }
+body, html { margin:0; padding:0; font-family: 'Segoe UI', Tahoma, sans-serif; background:var(--bg); overflow-x: hidden; }
+
+header { background: linear-gradient(135deg,#9333ea,#7c3aed); color:#fff; padding:20px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
+header h1 { margin:0; font-size:1.6rem; }
+
+.container { width: 100%; max-width: 900px; margin:auto; padding:10px; box-sizing: border-box; text-align:center; }
+
+/* --- 🔥 Rakib235: Ad Bridges --- */
+.custom-ad-bridge {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: white; padding: 15px; margin: 15px auto; border-radius: 12px; cursor: pointer;
+    width: 95%; max-width: 650px; box-shadow: 0 4px 15px rgba(255, 0, 0, 0.25); display: inline-block; box-sizing: border-box; text-align: left;
+}
+.ad-title { font-size: 15px; font-weight: bold; display: block; margin-bottom: 4px; }
+.ad-desc { font-size: 11px; opacity: 0.9; display: block; margin-bottom: 8px; line-height: 1.4; }
+.ad-btn { background: #fbbf24; color: #000; padding: 5px 15px; border-radius: 5px; font-weight: bold; font-size: 10px; border:none; text-transform: uppercase; }
+
+/* --- 🔥 Rakib235: Push Ad with X --- */
+#push-notification {
+    position: fixed; bottom: -150px; right: 20px;
+    width: 85%; max-width: 300px; background: #fff; border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2); display: flex; align-items: center; 
+    padding: 12px; z-index: 10000; transition: 0.6s; border-left: 5px solid var(--primary); text-align: left;
+}
+#push-notification.active { bottom: 20px; }
+#push-notification img { width: 35px; height: 35px; margin-right: 12px; border-radius: 6px; }
+.close-push { position: absolute; top: 5px; right: 10px; font-size: 18px; cursor: pointer; color: #bbb; font-weight: bold; }
+
+/* Tool UI */
+#upload-box { border:3px dashed var(--primary); padding:30px; text-align:center; cursor:pointer; border-radius:12px; background:#fff; margin:15px 0; color: var(--primary); font-weight: bold; transition: 0.3s; }
+#upload-box:hover { background: #f3e8ff; }
+
+#preview { display:flex; flex-wrap:wrap; gap:10px; justify-content: center; margin: 15px 0; }
+.preview-img { width: 100px; height: 130px; object-fit: cover; border: 2px solid #ddd; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+.controls { display:flex; flex-wrap:wrap; justify-content:center; gap: 10px; margin: 15px 0; }
+.nav-btn { padding:12px 20px; border:none; border-radius:8px; background:var(--primary); color:#fff; cursor:pointer; font-weight: bold; font-size: 14px; transition: 0.3s; }
+.btn-dark { background: #1e293b; }
+.btn-success { background: #10b981; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); width: 90%; max-width: 400px; font-size: 16px; }
+
+#toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#10b981; color:#fff; padding:10px 20px; border-radius:8px; display:none; z-index:9999; font-weight: bold; }
+#loader { display:none; color: var(--primary); font-weight: bold; margin: 10px 0; }
 </style>
 </head>
 <body>
 
+<div id="push-notification">
+    <span class="close-push" onclick="document.getElementById('push-notification').classList.remove('active');">&times;</span>
+    <div style="display:flex; align-items:center; width:100%;" onclick="window.open('https://easyusehub.blogspot.com', '_blank')">
+        <img src="https://cdn-icons-png.flaticon.com/512/5968/5968313.png" alt="icon">
+        <div class="push-text">
+            <b style="font-size:13px; color:#333;">🚀 46+ Premium Free Tool Ready</b>
+            <p style="font-size:10px; color:#666; margin:0;">Fast & Secure Access at EasyUseHub.</p>
+        </div>
+    </div>
+</div>
+
 <header>
-<h1>PDF Scanner Tool</h1>
-<p>Upload images to create multi-page PDFs.</p>
+    <h1>PDF Scanner Tool</h1>
+    <p>Turn your images into a clean, multi-page PDF document.</p>
 </header>
 
-<div class="ad-placeholder">Top Ad Placeholder</div>
-
 <div class="container">
+    <div class="custom-ad-bridge" onclick="window.open('https://easyusehub.blogspot.com', '_blank')">
+        <span class="ad-title">🚀 Try 46+ Premium Free Web Tools!</span>
+        <span class="ad-desc">Explore professional PDF editors, converters, and calculators for free.</span>
+        <button class="ad-btn">Open EasyUseHub</button>
+    </div>
 
-<div id="upload-box">📁 Upload Images</div>
-<input type="file" id="fileInput" accept="image/*" multiple hidden>
+    <div id="upload-box" onclick="document.getElementById('fileInput').click()">📁 Click to Upload or Scan Images</div>
+    <input type="file" id="fileInput" accept="image/*" multiple hidden>
+    
+    <div id="loader">⏳ Processing Images...</div>
+    <div id="preview"></div>
 
-<div id="preview"></div>
+    <div class="controls">
+        <button id="downloadPdfBtn" class="nav-btn btn-success">📄 Download Scanned PDF</button>
+    </div>
 
-<div class="ad-placeholder">Middle Ad Placeholder</div>
+    <div class="controls">
+        <button class="nav-btn btn-dark" onclick="window.location.href='https://easyusehub.blogspot.com/'">🏠 Home</button>
+        <button class="nav-btn btn-dark" onclick="window.location.href='https://easyusehub.blogspot.com/p/free-pdf-tools-online.html'">📂 All PDF Tools</button>
+    </div>
 
-<div class="controls">
-<button id="downloadPdfBtn">Download PDF</button>
-<button onclick="window.location.href='https://easyusehub.blogspot.com/?m=1'">🏠 Home</button>
-<button onclick="window.location.href='https://easyusehub.blogspot.com/p/free-pdf-tools-online.html'">📚 All PDF Tools</button>
+    <div class="custom-ad-bridge" style="background: linear-gradient(135deg, #7c3aed, #9333ea);" onclick="window.open('https://easyusehub.blogspot.com/p/ultimate-calculators-hub.html', '_blank')">
+        <span class="ad-title">🔢 Smart Online Calculators</span>
+        <span class="ad-desc">Calculate your Loan EMI, Age, and BMI instantly for free.</span>
+        <button class="ad-btn" style="background:#fff; color:#7c3aed;">Try Now</button>
+    </div>
+
+    <div class="custom-ad-bridge" style="background: linear-gradient(135deg, #059669, #10b981);" onclick="window.open('https://easyusehub.blogspot.com/p/image-compressor.html', '_blank')">
+        <span class="ad-title">⚡ High-Speed Image Compressor</span>
+        <span class="ad-desc">Compress images without losing quality in seconds.</span>
+        <button class="ad-btn" style="background:#fff; color:#059669;">Compress Now</button>
+    </div>
 </div>
 
-<div id="toast">PDF downloaded!</div>
-</div>
+<div id="toast">✅ PDF Created & Downloaded!</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 const { jsPDF } = window.jspdf;
-
-const uploadBox = document.getElementById('upload-box');
 const fileInput = document.getElementById('fileInput');
 const preview = document.getElementById('preview');
 const downloadBtn = document.getElementById('downloadPdfBtn');
+const loader = document.getElementById('loader');
 const toast = document.getElementById('toast');
 
-let images = [];
+let imagesData = [];
 
-uploadBox.onclick = () => fileInput.click();
+fileInput.addEventListener('change', async e => {
+    const files = Array.from(e.target.files);
+    if(files.length === 0) return;
 
-fileInput.addEventListener('change', e => {
-    Array.from(e.target.files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const img = new Image();
-            img.src = event.target.result;
-            images.push(img);
-            preview.appendChild(img);
-        };
-        reader.readAsDataURL(file);
-    });
+    loader.style.display = 'block';
+    
+    for (const file of files) {
+        const dataUrl = await readFileAsDataURL(file);
+        imagesData.push(dataUrl);
+        
+        const img = document.createElement('img');
+        img.src = dataUrl;
+        img.className = 'preview-img';
+        preview.appendChild(img);
+    }
+    
+    loader.style.display = 'none';
+    document.getElementById('push-notification').classList.add('active');
 });
 
-// Download PDF
-downloadBtn.addEventListener('click', () => {
-    if(images.length === 0) return alert("No images to convert!");
-    const pdf = new jsPDF();
-    images.forEach((img, i) => {
-        if(i > 0) pdf.addPage();
-        const imgProps = pdf.getImageProperties(img.src);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        pdf.addImage(img.src, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+function readFileAsDataURL(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(file);
     });
-    pdf.save('scanned.pdf');
-    toast.style.display='block';
-    setTimeout(()=>{toast.style.display='none';},2500);
+}
+
+downloadBtn.addEventListener('click', async () => {
+    if(imagesData.length === 0) return alert("Please upload some images first!");
+
+    loader.style.display = 'block';
+    const pdf = new jsPDF();
+    
+    for (let i = 0; i < imagesData.length; i++) {
+        if(i > 0) pdf.addPage();
+        
+        const img = new Image();
+        img.src = imagesData[i];
+        
+        await new Promise(resolve => img.onload = resolve);
+        
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+        // Auto-scale image to fit page
+        const ratio = Math.min(pdfWidth / img.width, pdfHeight / img.height);
+        const imgWidth = img.width * ratio;
+        const imgHeight = img.height * ratio;
+        
+        pdf.addImage(imagesData[i], 'JPEG', (pdfWidth - imgWidth)/2, (pdfHeight - imgHeight)/2, imgWidth, imgHeight);
+    }
+
+    pdf.save('EasyUseHub_Scanned_PDF.pdf');
+    loader.style.display = 'none';
+    
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
 });
 </script>
 </body>
